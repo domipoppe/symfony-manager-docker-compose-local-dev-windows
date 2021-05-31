@@ -2,6 +2,8 @@
 
 This is a full development environment for Symfony based on Windows OS. It will create your Symfony project & deliver a full docker-compose dev stack. It will also install a set of composer packages which are useful.
 
+The local dev database will also be linked automatically to your Symfony project.
+
 Of course this is not the best package or so, but it fits my personal needs.
 
 # Docker-Compose
