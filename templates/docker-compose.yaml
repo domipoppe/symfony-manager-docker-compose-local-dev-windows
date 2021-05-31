@@ -1,0 +1,115 @@
+# This is a local dev environment
+# it will create your all-around needs
+# by Dominic Poppe
+
+# including NGINX & PHP as web server
+# including a MariaDB docker
+# including a REDIS docker
+# including a PHPMYADMIN docker
+# including a Mailhog docker
+# including a SFTP docker
+
+# Webserver (PHP & NGINX)
+#   http://localhost/ or http://127.0.0.1
+# MariaDB
+#   localhost:3306 -> DB (user: root | password: rootPassword | database: devDB)
+# Redis
+#   localhost:6379 (no password)
+# PHPMYADMIN
+#   http://localhost:9090
+# Mailhog UI (Here we see incoming mails)
+#   http://localhost:8025/
+# Mailhog SMTP Server
+#   localhost:1025
+# SFTP
+#   sftp://localhost:2222 | user: foo | pass: pass
+
+version: "3.1"
+
+services:
+  db:
+    container_name: db
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootPassword
+      MYSQL_DATABASE: devDB
+      TZ: Europe/Berlin
+    ports:
+      - 3306:3306
+    volumes:
+      - ./docker/db:/var/lib/mysql
+
+  php:
+    container_name: php
+    build:
+      context: .
+      dockerfile: ./docker/php/php_dockerfile
+      args:
+        TIMEZONE: Europe/Berlin
+    depends_on:
+      - db
+    volumes:
+      - ./:/var/www/
+
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: ./docker/nginx/nginx_dockerfile
+    volumes:
+      - ./:/var/www/
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/sites/:/etc/nginx/sites-available
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d
+      - ./docker/nginx/logs:/var/log/nginx
+    ports:
+      - 80:80
+    depends_on:
+      - php
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ./docker/redis:/data
+    entrypoint: redis-server --appendonly yes
+    restart: always
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: rootPassword
+      MYSQL_ROOT_PASSWORD: rootPassword
+      MYSQL_USER: root
+      MYSQL_PASSWORD: rootPassword
+    ports:
+      - 9090:80
+    volumes:
+      - ./docker/phpmyadmin:/usr/local/etc/php/conf.d/php-phpmyadmin.ini
+
+  mailhog:
+    container_name: mailhog
+    image: mailhog/mailhog
+    logging:
+      driver: 'none'  # disable saving logs
+    ports:
+      - 1025:1025 # smtp server
+      - 8025:8025 # web ui
+
+  sftp:
+    container_name: sftp
+    image: atmoz/sftp
+    volumes:
+      - ./docker/sftp:/home/foo/upload
+    ports:
+      - "2222:22"
+    command: foo:pass:1001

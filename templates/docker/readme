@@ -1,0 +1,14 @@
+1)
+
+docker-compose pull
+docker-compose build
+
+2)
+
+to start the environment:
+docker-compose up -d
+
+3)
+
+to stop the environment:
+docker-compose down
