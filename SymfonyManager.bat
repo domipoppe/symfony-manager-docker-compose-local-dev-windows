@@ -98,6 +98,11 @@ echo.
 call composer require --dev phpstan/phpstan
 echo.
 
+echo Install Security Checker component...
+echo.
+call composer require --dev sec-checker
+echo.
+
 echo Install PHPStan Extension component...
 echo.
 call composer require --dev phpstan/extension-installer
@@ -118,9 +123,54 @@ echo.
 call composer require --dev phpunit/phpunit symfony/test-pack
 echo.
 
-echo Install Translation Admin WebGUI...
+echo Install cache component...
+echo.
+call composer require symfony/cache
+echo.
+
+echo Install encrypt-decrypt doctrine component...
+echo.
+call composer require michaeldegroot/doctrine-encrypt-bundle
+echo.
+
+echo Install UX components...
+echo.
+call composer require symfony/ux-chartjs
+call composer require symfony/ux-cropperjs
+call composer require symfony/ux-dropzone
+call composer require symfony/ux-lazy-image
+call composer require symfony/ux-swup
+echo.
+
+echo Install YARN components...
+echo.
+call yarn install --force
+call yarn encore dev
+echo.
+
+echo Install VichUploaderBundle...
+echo.
+call composer require vich/uploader-bundle
+echo.
+
+echo Install NelmioApiDocBundle...
+echo.
+call composer require nelmio/api-doc-bundle
+echo.
+
+echo Install Schedule Bundle...
+echo.
+call composer require zenstruck/schedule-bundle
+echo.
+
+echo Install Translation Bundle...
 echo.
 call composer require php-translation/symfony-bundle
+echo.
+
+echo Install Doctrine Enum Bundle...
+echo.
+call composer require fresh/doctrine-enum-bundle
 echo.
 
 echo Set-Up Docker-Compose Dev Environment...
