@@ -12,9 +12,12 @@ Of course this is not the best package or so, but it fits my personal needs.
 - "db" MariaDB as database (localhost:3306, user: root, password: rootPassword, db name: devDB)
 - "redis" Redis for queues / cache (localhost:6379, no password)
 - "phpmyadmin" PHPMYADMIN for GUI database management (http://localhost:6379)
-- "mailhog" Mailhog (http://localhost:8025) - SMTP: localhost:1025
+- "axigen" Axigen Mailserver (https://localhost:443 / https://localhost:9443)
 - "sftp" SFTP server (sftp://localhost:2222, user: foo, password: pass)
-- .env file for Symfony pre-setup for the local dev environemnt (linked with the docker DB)
+- .env file for Symfony pre-setup for the local dev environment (linked with the docker DB)
+- .env.local which changes environment locally to dev
+- .env.test
+- .gitlab-ci.yml Gitlab Pipeline
 
 ## Requirements
 
@@ -25,24 +28,7 @@ Of course this is not the best package or so, but it fits my personal needs.
 
 ## Composer Packages
 
-- symfony/console
-- symfony/finder
-- symfony/form
-- symfony/http-client
-- symfony/mailer
-- symfony/notifier
-- symfony/uid
-- symfony/validator
-- doctrine/annotations
-- symfony/var-dumper
-- symfony/translation
-- phpstan/phpstan
-- phpstan/extension-installer
-- phpstan/phpstan-symfony
-- dompdf/dompdf
-- phpunit/phpunit
-- symfony/test-pack
-- php-translation/symfony-bundle
+- WIP.
 
 ## How to get started?
 
