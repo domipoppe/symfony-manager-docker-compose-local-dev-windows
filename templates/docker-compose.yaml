@@ -6,29 +6,35 @@
 # including a MariaDB docker
 # including a REDIS docker
 # including a PHPMYADMIN docker
-# including a Mailhog docker
 # including a SFTP docker
+# including an Axigen docker (send mails, receive mails, create users...)
 
 # Webserver (PHP & NGINX)
 #   http://localhost/ or http://127.0.0.1
+
 # MariaDB
 #   localhost:3306 -> DB (user: root | password: rootPassword | database: devDB)
+
 # Redis
 #   localhost:6379 (no password)
+
 # PHPMYADMIN
 #   http://localhost:9090
-# Mailhog UI (Here we see incoming mails)
-#   http://localhost:8025/
-# Mailhog SMTP Server
-#   localhost:1025
+
 # SFTP
 #   sftp://localhost:2222 | user: foo | pass: pass
+
+# Axigen (when accessing the admin interface, you will create an account, for domain just do "localhost")
+#   https://localhost:443 -> Webmail
+#   https://localhost:9443 -> Admin Interface
+#   localhost:25 <- smtp server, no tls
+#   localhost:143 <- imap server, no tls
 
 version: "3.1"
 
 services:
-  db:
-    container_name: db
+  PROJECTNAME_db:
+    container_name: PROJECTNAME_db
     image: mariadb
     restart: always
     environment:
@@ -40,20 +46,20 @@ services:
     volumes:
       - ./docker/db:/var/lib/mysql
 
-  php:
-    container_name: php
+  PROJECTNAME_php:
+    container_name: PROJECTNAME_php
     build:
       context: .
       dockerfile: ./docker/php/php_dockerfile
       args:
         TIMEZONE: Europe/Berlin
     depends_on:
-      - db
+      - PROJECTNAME_db
     volumes:
       - ./:/var/www/
 
-  nginx:
-    container_name: nginx
+  PROJECTNAME_nginx:
+    container_name: PROJECTNAME_nginx
     build:
       context: .
       dockerfile: ./docker/nginx/nginx_dockerfile
@@ -66,10 +72,10 @@ services:
     ports:
       - 80:80
     depends_on:
-      - php
+      - PROJECTNAME_php
 
-  redis:
-    container_name: redis
+  PROJECTNAME_redis:
+    container_name: PROJECTNAME_redis
     image: redis
     ports:
       - 6379:6379
@@ -78,11 +84,11 @@ services:
     entrypoint: redis-server --appendonly yes
     restart: always
 
-  phpmyadmin:
-    container_name: phpmyadmin
+  PROJECTNAME_phpmyadmin:
+    container_name: PROJECTNAME_phpmyadmin
     image: phpmyadmin/phpmyadmin
     links:
-      - db
+      - PROJECTNAME_db
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
@@ -96,20 +102,26 @@ services:
     volumes:
       - ./docker/phpmyadmin:/usr/local/etc/php/conf.d/php-phpmyadmin.ini
 
-  mailhog:
-    container_name: mailhog
-    image: mailhog/mailhog
-    logging:
-      driver: 'none'  # disable saving logs
-    ports:
-      - 1025:1025 # smtp server
-      - 8025:8025 # web ui
-
-  sftp:
-    container_name: sftp
+  PROJECTNAME_sftp:
+    container_name: PROJECTNAME_sftp
     image: atmoz/sftp
     volumes:
       - ./docker/sftp:/home/foo/upload
     ports:
       - "2222:22"
     command: foo:pass:1001
+
+  PROJECTNAME_axigen:
+    container_name: PROJECTNAME_axigen
+    image: axigen/axigen
+    ports:
+      - "443:443"
+      - "9443:9443"
+      - "993:993"
+      - "995:995"
+      - "25:25"
+      - "465:465"
+      - "9000:9000"
+      - "7000:7000"
+    volumes:
+      - ./docker/axigen:/var/opt/axigen

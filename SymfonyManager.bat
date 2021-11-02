@@ -16,7 +16,7 @@ echo NGINX and PHP-FPM as web server
 echo MariaDB as database
 echo REDIS for queues/cache
 echo PHPMYADMIN for GUI database management
-echo Mailhog
+echo Axigen Mailserver
 echo SFTP server
 
 echo.
@@ -43,14 +43,34 @@ echo.
 call composer require symfony/console
 echo.
 
+echo Install nelmio security component...
+echo.
+call composer require nelmio/security-bundle
+echo.
+
 echo Install filesystem component...
 echo.
 call composer require symfony/filesystem
 echo.
 
+echo Install sentry component...
+echo.
+call composer require sentry/sentry-symfony
+echo.
+
+echo Install KnpTime component...
+echo.
+call composer require knplabs/knp-time-bundle
+echo.
+
 echo Install finder component...
 echo.
 call composer require symfony/finder
+echo.
+
+echo Install IMAP component...
+echo.
+call composer require secit-pl/imap-bundle
 echo.
 
 echo Install form component...
@@ -88,6 +108,11 @@ echo.
 call composer require symfony/var-dumper
 echo.
 
+echo Install debug component...
+echo.
+call composer require symfony/debug-bundle
+echo.
+
 echo Install translator component...
 echo.
 call composer require symfony/translation
@@ -96,11 +121,6 @@ echo.
 echo Install PHPStan component...
 echo.
 call composer require --dev phpstan/phpstan
-echo.
-
-echo Install Security Checker component...
-echo.
-call composer require --dev sec-checker
 echo.
 
 echo Install PHPStan Extension component...
@@ -173,10 +193,30 @@ echo.
 call composer require fresh/doctrine-enum-bundle
 echo.
 
+echo Install Twig Time Extension...
+echo.
+call composer require knplabs/knp-time-bundle
+echo.
+
 echo Set-Up Docker-Compose Dev Environment...
 echo.
 mkdir docker
 robocopy .\..\templates\ .\ /s /e
+echo.
+
+echo Delete doctrine test env config file...
+echo.
+del config\packages\test\doctrine.yaml
+del docker-compose.override.yml
+del docker-compose.yml
+echo.
+
+echo Rename docker containers to project name...
+echo.
+powershell -Command "(gc docker-compose.yaml) -replace 'PROJECTNAME', '%projectname%' | Out-File -encoding UTF8 docker-compose.yaml"
+powershell -Command "(gc .env) -replace 'db:3306', '%projectname%_db:3306' | Out-File -encoding UTF8 .env"
+powershell -Command "(gc .gitlab-ci.yml) -replace 'docker exec php', 'docker exec %projectname%_php' | Out-File -encoding UTF8 .gitlab-ci.yml"
+echo.
 
 echo.
 echo.

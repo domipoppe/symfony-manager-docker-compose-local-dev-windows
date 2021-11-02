@@ -24,8 +24,13 @@
 /docker/db/
 /docker/redis/
 /docker/sftp/
+/docker/axigen/
 /.idea/
 /docker/nginx/logs
 .rnd
 .ssh
+/node_modules/
+/public/images/tsavatars/
+composer.lock
+.Halite.key
 ###< default ignores ###

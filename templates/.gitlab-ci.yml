@@ -1,0 +1,39 @@
+# Symfony / Docker Compose Pipeline
+
+workflow:
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
+    - if: '$CI_COMMIT_REF_NAME == "release"'
+
+cache:
+  paths:
+    - vendor/
+
+stages:
+  - buildAndTest
+ # - deploy
+
+docker-build-job:
+  stage: buildAndTest
+  script:
+    - echo "Build docker environment..."
+    - sudo docker-compose down
+    - sudo docker-compose pull
+    - sudo docker-compose build
+    - sudo docker-compose up -d
+    - sleep 5
+    - echo "[Pipeline Runner] Install composer packages..."
+    - sudo docker exec php composer update
+    - sleep 5
+    - echo "[Pipeline Runner] Run migrations..."
+    - sudo docker exec php php bin/console doctrine:migrations:migrate
+    - sleep 5
+    - echo "[Pipeline Runner] Running unit tests..."
+    - sudo docker exec php php ./vendor/bin/phpunit
+    - echo "[Pipeline Runner] Build & tests completed..."
+
+#deploy-job:      # This job runs in the deploy stage.
+ # stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+  #script:
+#    - echo "Deploying application..."
+  #  - echo "Application successfully deployed."
