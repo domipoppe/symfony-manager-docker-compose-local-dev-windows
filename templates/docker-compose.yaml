@@ -2,14 +2,13 @@
 # it will create your all-around needs
 # by Dominic Poppe
 
-# including NGINX & PHP as web server
+# including NGINX & PHP as web server (+ XDebug)
 # including a MariaDB docker
 # including a REDIS docker
 # including a PHPMYADMIN docker
 # including a SFTP docker
-# including an Axigen docker (send mails, receive mails, create users...)
 
-# Webserver (PHP & NGINX)
+# Webserver (PHP & NGINX) with XDebug
 #   http://localhost/ or http://127.0.0.1
 
 # MariaDB
@@ -23,12 +22,6 @@
 
 # SFTP
 #   sftp://localhost:2222 | user: foo | pass: pass
-
-# Axigen (when accessing the admin interface, you will create an account, for domain just do "localhost")
-#   https://localhost:443 -> Webmail
-#   https://localhost:9443 -> Admin Interface
-#   localhost:25 <- smtp server, no tls
-#   localhost:143 <- imap server, no tls
 
 version: "3.1"
 
@@ -90,7 +83,7 @@ services:
     links:
       - PROJECTNAME_db
     environment:
-      PMA_HOST: db
+      PMA_HOST: PROJECTNAME_db
       PMA_PORT: 3306
       PMA_USER: root
       PMA_PASSWORD: rootPassword
@@ -110,18 +103,3 @@ services:
     ports:
       - "2222:22"
     command: foo:pass:1001
-
-  PROJECTNAME_axigen:
-    container_name: PROJECTNAME_axigen
-    image: axigen/axigen
-    ports:
-      - "443:443"
-      - "9443:9443"
-      - "993:993"
-      - "995:995"
-      - "25:25"
-      - "465:465"
-      - "9000:9000"
-      - "7000:7000"
-    volumes:
-      - ./docker/axigen:/var/opt/axigen

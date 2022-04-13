@@ -30,7 +30,7 @@
 .rnd
 .ssh
 /node_modules/
-/public/images/tsavatars/
+/uploads/
 composer.lock
 .Halite.key
 ###< default ignores ###

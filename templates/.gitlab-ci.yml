@@ -3,21 +3,24 @@
 workflow:
   rules:
     - if: '$CI_COMMIT_REF_NAME == "master"'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
     - if: '$CI_COMMIT_REF_NAME == "release"'
-
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    
 cache:
   paths:
     - vendor/
 
 stages:
   - buildAndTest
- # - deploy
+  - deploy
 
 docker-build-job:
   stage: buildAndTest
   script:
     - echo "Build docker environment..."
-    - sudo docker-compose down
+    - sudo docker stop $(docker ps -aq) || true
+    - sudo docker rm $(docker ps -aq) || true
     - sudo docker-compose pull
     - sudo docker-compose build
     - sudo docker-compose up -d
@@ -32,8 +35,11 @@ docker-build-job:
     - sudo docker exec php php ./vendor/bin/phpunit
     - echo "[Pipeline Runner] Build & tests completed..."
 
-#deploy-job:      # This job runs in the deploy stage.
- # stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  #script:
-#    - echo "Deploying application..."
-  #  - echo "Application successfully deployed."
+deploy-job:
+  only:
+    - release
+  stage: deploy
+  script:
+    - echo "Deploying application..."
+    - curl "FORGE_DEPLOY_URL"
+    - echo "Application successfully deployed."
